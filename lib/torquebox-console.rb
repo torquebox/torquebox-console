@@ -13,3 +13,4 @@
 # limitations under the License.
 
 require 'torquebox/console/server'
+require 'torquebox/console/builtin'

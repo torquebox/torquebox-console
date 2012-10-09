@@ -12,16 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'pry'
-require 'torquebox'
 require 'torquebox-stomp'
 require 'torquebox-cache'
-require 'torquebox-console'
+#require 'torquebox-console'
 
-class TorqueBoxConsole
-  extend TorqueBox::Injectors
+class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
 
   def configure( options )
+    super
     @cache = TorqueBox::Infinispan::Cache.new(:name=>"torquebox-console")
     @consoles = {}
   end
@@ -51,27 +49,5 @@ class TorqueBoxConsole
     @logger ||= TorqueBox::Logger.new( self )
   end
 
-  class << self
-
-    def service_registry
-      @@service_registry ||= inject("service-registry")
-    end
-
-    def list_runtimes
-      get_runtimes.each do |runtime| 
-        puts "Application: #{runtime[0]}"
-        puts "Pool: #{runtime[1]}"
-      end
-    end
-
-    def get_runtimes
-      service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.reject(&:nil?)
-    end
-
-    def parse_pool_name(service_name)
-      [$1, $3, service_name] if service_name.canonical_name =~
-        /"(.*)(-knob\.yml|\.knob)"\.torquebox\.core\.runtime\.pool\.([^.]+)$/
-    end
-  end
 end
 
