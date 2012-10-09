@@ -14,7 +14,7 @@
 
 require 'torquebox-stomp'
 require 'torquebox-cache'
-#require 'torquebox-console'
+require 'torquebox-console'
 
 class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
 
