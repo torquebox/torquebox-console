@@ -14,16 +14,24 @@
 
 require 'pry'
 require 'torquebox-stomp'
+require 'torquebox-cache'
+require 'torquebox-messaging'
 
 module TorqueBox
   module Console
     class Server
 
-      attr_accessor :queue
+      attr_accessor :input_queue, :output_queue, :console_id
 
-      def initialize( queue )
-        @queue = queue
-        yield self if block_given?
+      def initialize
+        @cache = TorqueBox::Infinispan::Cache.new(:name=>"torquebox-console")
+        @console_id = @cache.increment( "console" )
+
+        input_name = "/queues/torquebox-console/#{console_id}-input"
+        output_name = "/queues/torquebox-console/#{console_id}-output"
+
+        @input_queue = TorqueBox::Messaging::Queue.start( input_name, :durable => false )
+        @output_queue = TorqueBox::Messaging::Queue.start( output_name, :durable => false )
       end
 
       def run
@@ -35,21 +43,26 @@ module TorqueBox
         end
       end
 
-      # Pry channels
+      # Pry input channel
       def readline( prompt )
-        # here we need to wait on input from the client
-        #message = TorqueBox::Stomp::Message.new( prompt, {'prompt' => true} )
-        queue.publish_and_receive( prompt )
+        # First send the repl prompt to the client
+        output_queue.publish prompt
+        # Then wait for input
+        input_queue.receive
       end
 
+      # Pry output channel
       def puts( output = "" )
-        queue.publish output.to_s
+        output_queue.publish output.to_s
+      end
+
+      # Pry (undocumented?) requires this
+      def tty?
+        false
       end
 
     end # TorqueBox::Console::Server
   end # TorqueBox::Console
 end # TorqueBox
-
-
 
 
