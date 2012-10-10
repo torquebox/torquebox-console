@@ -12,30 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'pry'
+require 'torquebox-stomp'
+
 module TorqueBox
   module Console
     class Server
 
-      attr_accessor :subscriber
+      attr_accessor :queue
 
-      def initialize( subscriber )
-        @subscriber = subscriber
+      def initialize( queue )
+        @queue = queue
+        yield self if block_given?
       end
 
       def run
-        Pry.config.pager = false
         Thread.new do 
-          Pry.start binding, :input => self, :output => self, :prompt_name => "TorqueBox"
+          Pry.config.pager  = false
+          Pry.config.color  = false
+          Pry.config.prompt = proc { "TorqueBox> " }
+          Pry.start binding, :input => self, :output => self
         end
       end
 
       # Pry channels
       def readline( prompt )
-        subscriber.send prompt
+        # here we need to wait on input from the client
+        #message = TorqueBox::Stomp::Message.new( prompt, {'prompt' => true} )
+        queue.publish_and_receive( prompt )
       end
 
       def puts( output = "" )
-        subscriber.send output
+        queue.publish output.to_s
       end
 
     end # TorqueBox::Console::Server

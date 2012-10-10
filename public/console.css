@@ -1,0 +1,40 @@
+#console {
+  font-family: monospace;
+  font-size: 14px;
+  margin: auto;
+  padding: 0;
+  width:   90%;
+  height:  480px; }
+
+#console .panel {
+  display: block;
+  color: white;
+  margin: 12px;
+  padding: 12px 18px;
+  background-color: #333333; }
+
+#console form {
+  margin: 0;
+  padding: 0;
+}
+
+#console input.prompt {
+  padding: 6px;
+  border: none;
+}
+
+#console .panel pre {
+  margin: 0;
+  padding: 0;
+}
+
+#console .prompt {
+  width:  100%;
+  height: 5%;
+  padding: 0;
+  margin: 0;
+  font-family: monospace;
+  font-size: 14px;
+  background-color: #333333;
+  color: white; }
+

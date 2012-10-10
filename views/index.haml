@@ -1,0 +1,22 @@
+!!!
+%html
+  %head
+    %script{  :type  => "text/javascript", 
+              :src   => "https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" }
+    %script{  :type  => "text/javascript", 
+              :src   => "stilts-stomp.js" }
+    %script{  :type  => "text/javascript", 
+              :src   => "console.js" }
+    %link{    :rel   => "stylesheet",
+              :href  => "console.css",
+              :type  => "text/css",
+              :media => "screen" }
+  %body
+    %h1 TorqueBox::Console
+    %form#input-form
+      #console
+        .panel
+          %pre
+            %code
+              .content
+          %input.prompt{:type=>:text, :value=>"> "}

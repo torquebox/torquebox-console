@@ -14,6 +14,7 @@
 
 require 'torquebox-stomp'
 require 'torquebox-cache'
+require 'torquebox-messaging'
 require 'torquebox-console'
 
 class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
@@ -25,24 +26,41 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
   end
 
   def on_message( message, session )
-    console = @consoles[session["console_id"]]
-    logger.error("No console found for the current session #{session.inspect}")
+    logger.info("Yo dawg!")
+    console = @consoles[session["console"]]
+    if console
+      logger.info("Got a message from the console: #{message.inspect}")
+    else
+      logger.error("No console found for the current session #{session.inspect}") 
+    end
   end
 
   def on_subscribe( subscriber )
+    # Initialize and set session information
     session = subscriber.session
-    session["console_id"] = @cache.increment( "console_id" )
-    server = TorqueBox::Console::Server.new( subscriber )
-    @consoles[session["console_id"]] = server
-    logger.info "Initializing torquebox-console service for console #{session["console_id"]}"
-    subscriber.send("Welcome to TorqueBox Console")
-    server.run
+    console = @cache.increment( "console" )
+    session["console"] = console
+    logger.info "Begin: initializing service for torquebox-console #{console}"
+
+    # Create a new queue for this connection
+    queue = "/queues/torquebox-console/#{console}"
+    queue = TorqueBox::Messaging::Queue.start( queue, :durable => false )
+
+    # Subscribe our stomplet connection to the queue 
+    subscribe_to( subscriber, queue )
+
+    # Create a new server that sends/receives on the queue
+    TorqueBox::Console::Server.new( queue ) do |server|
+      @consoles[console] = server
+      server.run
+    end
+    logger.info "End: torquebox-console service initialized for console #{console}"
   end
  
   def on_unsubscribe( subscriber )
     session = subscriber.session
-    logger.info "Closing torquebox-console service for console #{session["console_id"]}"
-    @consoles.delete( session["console_id"] )
+    logger.info "Closing torquebox-console service for console #{session["console"]}"
+    @consoles.delete( session["console"] )
   end
 
   def logger
