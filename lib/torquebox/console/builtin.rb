@@ -18,6 +18,7 @@ module TorqueBox
   module Console
     module Builtin
       extend TorqueBox::Injectors
+      class << self
       def service_registry
         @@service_registry ||= inject("service-registry")
       end
@@ -36,6 +37,7 @@ module TorqueBox
       def parse_pool_name(service_name)
         [$1, $3, service_name] if service_name.canonical_name =~
           /"(.*)(-knob\.yml|\.knob)"\.torquebox\.core\.runtime\.pool\.([^.]+)$/
+      end
       end
     end
   end

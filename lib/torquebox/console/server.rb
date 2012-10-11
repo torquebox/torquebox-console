@@ -48,9 +48,7 @@ module TorqueBox
         # First send the repl prompt to the client
         output_queue.publish prompt
         # Then wait for input
-        msg = input_queue.receive
-        $stderr.puts msg
-        msg
+        input_queue.receive
       end
 
       # Pry output channel

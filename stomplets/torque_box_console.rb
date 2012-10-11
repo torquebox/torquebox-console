@@ -25,7 +25,7 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
   def on_message( message, session )
     server = @servers[session["console_id"]]
     if server
-      send_to( server.input_queue, message.content )
+      send_to( server.input_queue, message.content_as_string )
     else
       logger.error("No console found for the server #{server}") 
     end
