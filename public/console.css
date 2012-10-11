@@ -4,7 +4,8 @@
   margin: auto;
   padding: 0;
   width:   90%;
-  height:  480px; }
+  height:  480px; 
+  max-height: 980px;}
 
 #console form {
   margin: 0;

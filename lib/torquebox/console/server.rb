@@ -34,12 +34,12 @@ module TorqueBox
         @output_queue = TorqueBox::Messaging::Queue.start( output_name, :durable => false )
       end
 
-      def run
+      def run( entry_point )
         Thread.new do 
           Pry.config.pager  = false
           Pry.config.color  = false
           Pry.config.prompt = proc { "TorqueBox> " }
-          Pry.start binding, :input => self, :output => self
+          Pry.start entry_point, :input => self, :output => self
         end
       end
 
@@ -48,7 +48,9 @@ module TorqueBox
         # First send the repl prompt to the client
         output_queue.publish prompt
         # Then wait for input
-        input_queue.receive
+        msg = input_queue.receive
+        $stderr.puts msg
+        msg
       end
 
       # Pry output channel

@@ -18,27 +18,24 @@ module TorqueBox
   module Console
     module Builtin
       extend TorqueBox::Injectors
-      class << self
+      def service_registry
+        @@service_registry ||= inject("service-registry")
+      end
 
-        def service_registry
-          @@service_registry ||= inject("service-registry")
+      def list_runtimes
+        get_runtimes.each do |runtime| 
+          puts "Application: #{runtime[0]}"
+          puts "Pool: #{runtime[1]}"
         end
+      end
 
-        def list_runtimes
-          get_runtimes.each do |runtime| 
-            puts "Application: #{runtime[0]}"
-            puts "Pool: #{runtime[1]}"
-          end
-        end
+      def get_runtimes
+        service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.reject(&:nil?)
+      end
 
-        def get_runtimes
-          service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.reject(&:nil?)
-        end
-
-        def parse_pool_name(service_name)
-          [$1, $3, service_name] if service_name.canonical_name =~
-            /"(.*)(-knob\.yml|\.knob)"\.torquebox\.core\.runtime\.pool\.([^.]+)$/
-        end
+      def parse_pool_name(service_name)
+        [$1, $3, service_name] if service_name.canonical_name =~
+          /"(.*)(-knob\.yml|\.knob)"\.torquebox\.core\.runtime\.pool\.([^.]+)$/
       end
     end
   end

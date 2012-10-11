@@ -2,7 +2,7 @@ $().ready( function() {
   client = Stomp.client( "ws://localhost:8675" )
 
   var display_message = function( message ) {
-      $("#console .content").append( message.body + "\n")
+      $("#console .content").append( "\n" + message.body )
   }
 
   var send_message = function( message ) {
