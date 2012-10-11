@@ -6,29 +6,34 @@ body {
 
 #console {
   border: 1px solid #ddd;
-  margin: auto;
-  padding: 0px 30px 10px 20px;
+  padding: 0px 20px 0px 10px;
   width:   90%;
-  overflow-x: hidden;
+  overflow-x: auto;
   height:  auto; }
 
-#console form {
+pre {
+    white-space: pre-wrap; /* css-3 should we be so lucky... */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 ?? */
+    white-space: -o-pre-wrap; /* Opera 7 ?? */
+}
+
+form {
   margin: 0;
   padding: 0;
 }
 
-#console input.prompt {
-  padding: 6px;
-  border: none;
+#console .prompt {
+  display: inline;
+  blink;
 }
 
-#console .prompt {
-  width:  100%;
+#console input {
+  padding: 6px;
+  border: none;
+  width:  87%;
   height: 5%;
-  padding: 0;
   margin: 0 0 20px 0;
   font-family: monospace;
-  font-size: 14px;
-  background-color: #333333;
-  color: white; }
+  font-size: 14px; }
 

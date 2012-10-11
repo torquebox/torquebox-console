@@ -46,7 +46,7 @@ module TorqueBox
       # Pry input channel
       def readline( prompt )
         # First send the repl prompt to the client
-        output_queue.publish prompt
+        output_queue.publish prompt, {:properties => {'prompt' => 'true'}}
         # Then wait for input
         input_queue.receive
       end

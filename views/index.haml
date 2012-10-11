@@ -12,10 +12,11 @@
               :type  => "text/css",
               :media => "screen" }
   %body
-    %h1 TorqueBox::Console
     %form#input-form
+      %h1 TorqueBox::Console
       #console
         %pre
           %code
             .content
-        %input.prompt{:type=>:text, :value=>""}
+        .prompt
+        %input{:type=>:text, :value=>""}

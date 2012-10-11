@@ -6,15 +6,20 @@ $().ready( function() {
       line = message.body
       line = line.replace("<", "&lt;")
       line = line.replace(">", "&gt;")
-      elem.append( "\n" + line )
+      if (message.headers['prompt']) {
+        $("#console .prompt").html( line )
+      } else {
+        elem.append( line + "\n" )
+      }
       $(window).scrollTop($("body").height())
-      $("#console .prompt").focus();
+      $("#console input").focus();
   }
 
   var send_message = function( message ) {
-      var input = $("#console .prompt").attr( "value" ) + "\n"
-      $("#console .prompt").attr( "value", "" )
+      var input = $("#console input").attr( "value" ) + "\n"
+      $("#console .content").append( $("#console .prompt").text() )
       $("#console .content").append( input )
+      $("#console input").attr( "value", "" )
       client.send( "/stomplet/console", {}, input )
       return false;
   }
@@ -27,7 +32,5 @@ $().ready( function() {
   client.connect( null, null, function() {
       client.subscribe("/stomplet/console", display_message)
   } );
-
-  $("#console .prompt").focus();
 } )
 
