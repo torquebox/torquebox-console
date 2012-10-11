@@ -1,0 +1,7 @@
+* Ensure the client unsubscribes
+* Figure out how to attach to other runtimes
+* Improve UI
+* Implement command line client
+* Document usage
+* Package/publish gem
+* Implement additional helper methods in Builtin, e.g. clear_cache
