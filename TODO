@@ -1,11 +1,11 @@
 * Destroy queues on disconnect
 * Figure out how to attach to other runtimes
-* Implement command line client
 * Document usage
 * Package/publish gem
 * Implement additional helper methods in Builtin, e.g. clear_cache
 * Is multi-line input for the web UI even reasonable?
 
+* [done] Implement command line client
 * [done] Make web UI auto scroll
 * [done] Ensure the client unsubscribes
 * [done] escape angle brackets in the html

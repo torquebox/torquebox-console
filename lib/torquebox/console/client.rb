@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require 'stomp'
+require 'readline'
 
 module TorqueBox
   module Console
@@ -24,6 +25,7 @@ module TorqueBox
 
       def initialize
         @client = Stomp::Client.new( { :hosts => HOSTS, :connect_headers => HEADERS } )
+        @stty_save = `stty -g`.chomp
       end
 
       def self.connect
@@ -32,11 +34,18 @@ module TorqueBox
 
       def run
         client.subscribe("/stomplet/console") do |msg| 
-          msg.headers['prompt'] ? print(msg.body) : puts(msg.body)
+          !msg.headers['prompt'] && puts(msg.body)
         end
-        while((input = gets).chop != "exit") do
+        # Since our messaging is async, sleep
+        # before displaying the prompt
+        sleep 0.1
+        while(input = Readline.readline( "TorqueBox> ", true ))
           client.publish("/stomplet/console", input)
+          sleep 0.1 # again with the async
         end
+      rescue Interrupt => e
+        system('stty', @stty_save) 
+        exit
       end
 
     end
