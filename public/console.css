@@ -1,21 +1,37 @@
 body {
-  font-family: monospace;
+  font-family: 'Source Code Pro', 'Inconsolata', 'Courier' monospace;
+  margin: 20px;
   padding: 10px;
   font-size: 14px;
+  line-height: 140%;
 }
 
-#console {
-  border: 1px solid #ddd;
-  padding: 0px 20px 0px 10px;
-  width:   90%;
-  overflow-x: auto;
-  height:  auto; }
+body.dark {
+  background-color: #2E2E2E;
+  color: #eee;
+}
 
-pre {
+body.dark #console input {
+  background-color: #2E2E2E;
+  color: #fff;
+}
+
+body.light {
+  color: #2E2E2E;
+  background-color: #fff;
+}
+
+body.light #console input {
+  color: #2E2E2E;
+  background-color: #fff;
+}
+
+pre code {
     white-space: pre-wrap; /* css-3 should we be so lucky... */
     white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
     white-space: -pre-wrap; /* Opera 4-6 ?? */
     white-space: -o-pre-wrap; /* Opera 7 ?? */
+    font-family: 'Source Code Pro', 'Inconsolata', 'Courier' monospace;
 }
 
 form {
@@ -23,17 +39,42 @@ form {
   padding: 0;
 }
 
-#console .prompt {
-  display: inline;
-  blink;
+h1 {
+  display: inline-block;
+  margin: 0;
 }
 
-#console input {
+input {
   padding: 6px;
   border: none;
   width:  87%;
   height: 5%;
   margin: 0 0 20px 0;
-  font-family: monospace;
+  font-family: 'Source Code Pro', 'Inconsolata', 'Courier' monospace;
   font-size: 14px; }
+
+#controls {
+  margin: 20px 0;
+}
+
+#controls .button {
+  width: 50px;
+  text-align: center;
+  display: inline-block;
+  padding: 4px;
+  margin-right: 10px;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+#console {
+  border: 1px solid #585858;
+  padding: 10px;
+  overflow-x: auto;
+  height:  auto; }
+
+#console .prompt {
+  display: inline;
+  font-weight: bold;
+}
 

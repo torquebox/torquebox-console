@@ -11,9 +11,12 @@
               :href  => "console.css",
               :type  => "text/css",
               :media => "screen" }
-  %body
-    %form#input-form
+  %body.light
+    #controls
+      %span#light.button Light
+      %span#dark.button Dark
       %h1 TorqueBox::Console
+    %form#input-form
       #console
         %pre
           %code

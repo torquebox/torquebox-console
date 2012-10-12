@@ -24,10 +24,21 @@ $().ready( function() {
       return false;
   }
 
+  var toggle_theme = function() {
+    if ($("body").hasClass("light")) {
+      $("body").removeClass("light");
+      $("body").addClass("dark");
+    } else {
+      $("body").addClass("light");
+      $("body").removeClass("dark");
+    }
+  }
+
   $(window).unload( function() {
       client.disconnect() });
 
   $( '#input-form' ).bind( "submit", send_message );
+  $( '.button' ).bind( "click", toggle_theme );
 
   client.connect( null, null, function() {
       client.subscribe("/stomplet/console", display_message)
