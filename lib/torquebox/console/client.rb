@@ -26,7 +26,6 @@ module TorqueBox
 
       def initialize
         @client = Stomp::Client.new( PARAMS )
-        @stty_save = `stty -g`.chomp
       rescue Stomp::Error::MaxReconnectAttempts
         puts "Can't connect to TorqueBox. Are you sure the server is running?"
       end

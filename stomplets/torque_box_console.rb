@@ -33,7 +33,6 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
 
   def on_subscribe( subscriber )
     # Create a new server that sends/receives on the queue
-    puts subscriber.inspect
     server = TorqueBox::Console::Server.new
 
     # Keep a reference to it around for a while

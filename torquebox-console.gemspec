@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+require './lib/torquebox/console/version'
 
 Gem::Specification.new do |s|
   s.name = %q{torquebox-console}
@@ -19,7 +20,12 @@ Gem::Specification.new do |s|
                 "[A-Z]*",
                 "config/**/*",
                 "lib/**/*",
-                "bin/**/*"
+                "views/**/*",
+                "stomplets/**/*",
+                "public/**/*",
+                "bin/**/*",
+                "config.ru",
+                "console.rb"
                ] - %w{ Gemfile.lock }
 
   s.homepage = %q{http://github.com/torquebox/torquebox-console}
@@ -30,9 +36,13 @@ Gem::Specification.new do |s|
 
 
   deps = [
-          [%q<jmx>, "= 0.9"],
-          [%q<torquebox>, "~> 2.1.2"]
-         ]
+          ["pry", "~>0.9.10"],
+          ["torquebox", "~>2.0"],
+          ["sinatra", "~>1.3.3"],
+          ["haml", "~>3.1.7"],
+          ["thor", "~>0.14.6"],
+          ["stomp", "~>1.2.6"]
+        ]
   
   if s.respond_to? :specification_version then
     s.specification_version = 3

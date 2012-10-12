@@ -16,7 +16,57 @@
 
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
-require 'rubygems'
+require 'thor'
+require 'torquebox-rake-support'
 require 'torquebox/console/client'
 
-TorqueBox::Console::Client.connect
+class TorqueBoxConsoleCommand < Thor
+
+  DEPLOYMENT_NAME = 'torquebox-console-knob.yml'
+
+  desc "deploy [--secure=username:password[,username:password]*]", "Deploys TorqueBox::Console to the TorqueBox instance specified by $TORQUEBOX_HOME"
+  method_option :secure, :type => :hash, :default => nil
+  def deploy
+    check
+    descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => root_dir,
+                                                                     :env => 'production' )
+    if options[:secure]
+      descriptor['environment']['REQUIRE_AUTHENTICATION'] = true
+      descriptor['auth'] = {'console' => {'domain'=>'torquebox-torquebox-console', 'credentials'=>{}}}
+      options[:secure].each do |user, pass|
+        descriptor['auth']['console']['credentials'][user] = pass
+      end
+      puts ">> Wrote user/password entries to TorqueBox::Console deployment descriptor"
+    else
+      puts ">> WARNING: deploying TorqueBox::Console with no security - use the --secure=username:password option to secure it"
+    end
+
+    name, dir = TorqueBox::DeployUtils.deploy_yaml( descriptor, :name => DEPLOYMENT_NAME )
+    puts ">> Deployed #{name} to #{dir}"
+  end
+
+  desc "undeploy", "Undeploys TorqueBox::Console from the TorqueBox instance specified by $TORQUEBOX_HOME"
+  def undeploy
+    check
+    name, dir = TorqueBox::DeployUtils.undeploy_yaml( :name => DEPLOYMENT_NAME )
+
+    puts ">> Undeployed #{name} from #{dir}" if name
+  end
+
+  desc "connect", "Runs the CLI console"
+  def connect
+    TorqueBox::Console::Client.connect
+  end
+
+  protected
+  def check
+    raise Exception.new("$TORQUEBOX_HOME must be set") unless ENV['TORQUEBOX_HOME']
+  end
+
+  def root_dir
+    File.expand_path( File.join( File.dirname( __FILE__ ), '..' ) )
+  end
+
+end
+
+TorqueBoxConsoleCommand.start(ARGV)
