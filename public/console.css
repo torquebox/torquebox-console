@@ -58,7 +58,7 @@ input {
 }
 
 #controls .button {
-  width: 50px;
+  width: 100px;
   text-align: center;
   display: inline-block;
   padding: 4px;

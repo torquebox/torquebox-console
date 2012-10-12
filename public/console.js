@@ -9,7 +9,8 @@ $().ready( function() {
       if (message.headers['prompt']) {
         $("#console .prompt").html( line )
       } else {
-        elem.append( line + "\n" )
+        elem.append( ansispan(line) + "\n" )
+        /*elem.append( line + "\n" )*/
       }
       $(window).scrollTop($("body").height())
       $("#console input").focus();
@@ -34,8 +35,7 @@ $().ready( function() {
     }
   }
 
-  $(window).unload( function() {
-      client.disconnect() });
+  $(window).unload( function() { client.disconnect() });
 
   $( '#input-form' ).bind( "submit", send_message );
   $( '.button' ).bind( "click", toggle_theme );

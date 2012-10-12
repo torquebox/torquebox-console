@@ -6,6 +6,8 @@
     %script{  :type  => "text/javascript", 
               :src   => "stilts-stomp.js" }
     %script{  :type  => "text/javascript", 
+              :src   => "ansispan.js" }
+    %script{  :type  => "text/javascript", 
               :src   => "console.js" }
     %link{    :rel   => "stylesheet",
               :href  => "console.css",
@@ -13,8 +15,7 @@
               :media => "screen" }
   %body.light
     #controls
-      %span#light.button Light
-      %span#dark.button Dark
+      %span.button Light/Dark
       %h1 TorqueBox::Console
     %form#input-form
       #console
@@ -23,3 +24,5 @@
             .content
         .prompt
         %input{:type=>:text, :value=>""}
+      #welcome{:style=>"text-align: right"}
+        Type any ruby statement or pry command.

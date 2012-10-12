@@ -18,14 +18,17 @@ require 'readline'
 module TorqueBox
   module Console
     class Client
-      HEADERS = { "accept-version" => "1.1", "host" => "localhost" }              
+      HEADERS = { "accept-version" => "1.1", "host" => "localhost" }
       HOSTS   = [{:host => "localhost", :port => 8675}]
+      PARAMS  = { :connect_headers => HEADERS, :hosts => HOSTS, :max_reconnect_attempts => -1 }
 
       attr_accessor :client
 
       def initialize
-        @client = Stomp::Client.new( { :hosts => HOSTS, :connect_headers => HEADERS } )
+        @client = Stomp::Client.new( PARAMS )
         @stty_save = `stty -g`.chomp
+      rescue Stomp::Error::MaxReconnectAttempts
+        puts "Can't connect to TorqueBox. Are you sure the server is running?"
       end
 
       def self.connect
@@ -33,21 +36,20 @@ module TorqueBox
       end
 
       def run
-        client.subscribe("/stomplet/console") do |msg| 
-          !msg.headers['prompt'] && puts(msg.body)
+        if client
+          client.subscribe("/stomplet/console") do |msg| 
+            !msg.headers['prompt'] && puts(msg.body)
+          end
+          # Since our messaging is async, sleep
+          # before displaying the prompt
+          sleep 0.3
+          while(input = Readline.readline( "TorqueBox> ", true ))
+            client.publish("/stomplet/console", input)
+            sleep 0.3 # again with the async
+          end
+          client.unsubscribe('/stomplet/console')
         end
-        # Since our messaging is async, sleep
-        # before displaying the prompt
-        sleep 0.1
-        while(input = Readline.readline( "TorqueBox> ", true ))
-          client.publish("/stomplet/console", input)
-          sleep 0.1 # again with the async
-        end
-      rescue Interrupt => e
-        system('stty', @stty_save) 
-        exit
       end
-
     end
   end
 end

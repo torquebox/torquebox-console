@@ -33,6 +33,7 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
 
   def on_subscribe( subscriber )
     # Create a new server that sends/receives on the queue
+    puts subscriber.inspect
     server = TorqueBox::Console::Server.new
 
     # Keep a reference to it around for a while
@@ -45,8 +46,6 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
 
     # Subscribe our stomplet connection to the server's queue 
     subscribe_to( subscriber, server.output_queue )
-    server.output_queue.publish( "Welcome to the TorqueBox::Console. Enjoy your stay." )
-    server.output_queue.publish( "Type any ruby statement or pry command." )
     server.run( TorqueBox::Console::Builtin )
   end
  

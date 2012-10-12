@@ -37,7 +37,7 @@ module TorqueBox
       def run( entry_point )
         Thread.new do 
           Pry.config.pager  = false
-          Pry.config.color  = false
+          #Pry.config.color  = false
           Pry.config.prompt = proc { "TorqueBox> " }
           Pry.start entry_point, :input => self, :output => self
         end
