@@ -1,10 +1,11 @@
-* Document usage
-* Package/publish gem
 * Destroy queues on disconnect
 * Figure out how to attach to other runtimes
 * multi-line input 
+* Add auth if necessasry
 * Implement additional helper methods in Builtin, e.g. clear_cache
 
+* [done] Document usage
+* [done] Package/publish gem
 * [done] Implement command line client
 * [done] Make web UI auto scroll
 * [done] Ensure the client unsubscribes
