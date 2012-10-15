@@ -3,7 +3,7 @@ require './lib/torquebox/console/version'
 
 Gem::Specification.new do |s|
   s.name = %q{torquebox-console}
-  s.version = IO.read(File.join(File.dirname(__FILE__), 'VERSION')).strip
+  s.version = TorqueBox::Console::VERSION
   s.date = Time.now.strftime('%Y-%m-%d')
   s.authors = ["Lance Ball"]
   
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.5.1}
   s.summary = %q{TorqueBox Console - A REPL commandline and information viewer for TorqueBox}
+  s.extensions = ["Rakefile"]
 
 
   deps = [
@@ -66,4 +67,3 @@ Gem::Specification.new do |s|
     end
   end
 end
-

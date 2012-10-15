@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'bundler/setup'
 require './lib/torquebox/console/version'
 
@@ -23,3 +25,5 @@ end
 task :tag do
   system "git tag #{TorqueBox::Console::VERSION}"
 end
+
+
