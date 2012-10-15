@@ -39,7 +39,8 @@ EOT
   method_option :dir, :type => :string, :default => "#{Dir.pwd}/torquebox-console"
   def deploy
     check
-    descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => options[:dir],
+    deploy_dir = File.expand_path options[:dir]
+    descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => deploy_dir,
                                                                      :env => 'production' )
     if options[:secure]
       descriptor['environment']['REQUIRE_AUTHENTICATION'] = true
@@ -52,15 +53,15 @@ EOT
       puts ">> WARNING: deploying TorqueBox::Console with no security - use the --secure=username:password option to secure it"
     end
 
-    unless File.exist?( options[:dir] )
-      puts ">> Creating torquebox-console app directory #{options[:dir]}."
-      Dir.mkdir( options[:dir] ) 
+    unless File.exist?( deploy_dir )
+      puts ">> Creating torquebox-console app directory #{deploy_dir}."
+      Dir.mkdir( deploy_dir )
     end
-    puts "Copying torquebox-console app to #{options[:dir]}"
-    files = Dir.glob("*") - ["bin", "torquebox-console.gemspec", "TODO", "VERSION"]
-    FileUtils.cp_r( files, "#{options[:dir]}/", :verbose=>true )
+    puts "Copying torquebox-console app to #{deploy_dir}"
+    files = Dir.glob("#{root_dir}/*") - ["#{root_dir}/bin"]
+    FileUtils.cp_r( files, "#{deploy_dir}/", :verbose=>true )
     name, dir = TorqueBox::DeployUtils.deploy_yaml( descriptor, :name => DEPLOYMENT_NAME )
-    puts ">> Deployed #{options[:dir]} as #{name} to #{dir}/#{name}"
+    puts ">> Deployed #{deploy_dir} as #{name} to #{dir}/#{name}"
   end
 
   desc "undeploy", "Undeploys TorqueBox::Console from the TorqueBox instance specified by $TORQUEBOX_HOME"
