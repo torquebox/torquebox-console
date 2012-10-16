@@ -33,7 +33,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.5.1}
   s.summary = %q{TorqueBox Console - A REPL commandline and information viewer for TorqueBox}
-  s.extensions = ["Rakefile"]
 
 
   deps = [
