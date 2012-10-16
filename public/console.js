@@ -1,5 +1,14 @@
 $().ready( function() {
-  client = Stomp.client( "ws://localhost:8675" )
+  if (endpoint == null) {
+    // endpoint should be set in index.haml
+    // value provided by torquebox injection
+    // but if for whatever reason that doesn't
+    // work, we'll try this
+    endpoint = "ws://localhost:8675" 
+  } else { 
+    alert( "Using: " + endpoint )
+  }
+  client = Stomp.client( endpoint )
 
   var display_message = function( message ) {
       elem = $("#console .content")

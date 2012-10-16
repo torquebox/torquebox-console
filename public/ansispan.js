@@ -13,13 +13,14 @@ var ansispan = function (str) {
     ).replace(
       new RegExp('\033\\[1;' + ansi + 'm', 'g'),
       '<span style="color: ' + ansispan.brightForegroundColors[ansi] + '">'
-    );
+    ).replace( new RegExp('\033\\[4m', 'g'), '<span style="text-decoration: underline">' );
   });
   //
   // `\033[1m` enables bold font, `\033[22m` disables it or \033[0m` resets
   //
   str = str.replace(/\033\[1m/g, '<b>').replace(/\033\[22m/g, '</b>');
   str = str.replace(/\033\[1m/g, '<b>').replace(/\033\[0m/g, '</b>');
+
 
   //
   // `\033[3m` enables italics font, `\033[23m` disables it or \033[0m resets
