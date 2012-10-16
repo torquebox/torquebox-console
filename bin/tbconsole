@@ -25,51 +25,32 @@ class TorqueBoxConsoleCommand < Thor
 
   DEPLOYMENT_NAME = 'torquebox-console-knob.yml'
 
-  desc "deploy --dir=<deploy_dir> [--secure=username:password[,username:password]*]", 
-  <<-EOT
+  desc "deploy --dir=DIR", <<-EOT
 Writes the torquebox-console application to disk in the directory specified by 
---dir, and deploys the app to the TorqueBox instance specified by ENV['TORQUEBOX_HOME']
-(currently #{ENV['TORQUEBOX_HOME']}).
+--dir, and deploys the app to the TorqueBox instance detected on the local host,
+(currently #{TorqueBox::DeployUtils.torquebox_home}).
 
 If --dir is not provided, the torquebox-console app will be written to Dir.pwd/torquebox-console
 (currently #{Dir.pwd}/torquebox-console). 
-
 EOT
-  method_option :secure, :type => :hash, :default => nil
   method_option :dir, :type => :string, :default => "#{Dir.pwd}/torquebox-console"
   def deploy
     check
     deploy_dir = File.expand_path options[:dir]
     descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => deploy_dir,
                                                                      :env => 'production' )
-    if options[:secure]
-      descriptor['environment']['REQUIRE_AUTHENTICATION'] = true
-      descriptor['auth'] = {'console' => {'domain'=>'torquebox-torquebox-console', 'credentials'=>{}}}
-      options[:secure].each do |user, pass|
-        descriptor['auth']['console']['credentials'][user] = pass
-      end
-      puts ">> Wrote user/password entries to TorqueBox::Console deployment descriptor"
-    else
-      puts ">> WARNING: deploying TorqueBox::Console with no security - use the --secure=username:password option to secure it"
-    end
-
-    unless File.exist?( deploy_dir )
-      puts ">> Creating torquebox-console app directory #{deploy_dir}."
-      Dir.mkdir( deploy_dir )
-    end
+    Dir.mkdir( deploy_dir ) unless File.exist?( deploy_dir )
     puts "Copying torquebox-console app to #{deploy_dir}"
     files = Dir.glob("#{root_dir}/*") - ["#{root_dir}/bin"]
-    FileUtils.cp_r( files, "#{deploy_dir}/", :verbose=>true )
+    FileUtils.cp_r( files, "#{deploy_dir}/" )
     name, dir = TorqueBox::DeployUtils.deploy_yaml( descriptor, :name => DEPLOYMENT_NAME )
-    puts ">> Deployed #{deploy_dir} as #{name} to #{dir}/#{name}"
+    puts ">> Deployed to #{dir}/#{name}"
   end
 
   desc "undeploy", "Undeploys TorqueBox::Console from the TorqueBox instance specified by $TORQUEBOX_HOME"
   def undeploy
     check
     name, dir = TorqueBox::DeployUtils.undeploy_yaml( :name => DEPLOYMENT_NAME )
-
-    puts ">> Undeployed #{name} from #{dir}" if name
   end
 
   desc "connect", "Runs the CLI console"
@@ -79,16 +60,13 @@ EOT
 
   protected
   def check
-    raise Exception.new("$TORQUEBOX_HOME must be set") unless ENV['TORQUEBOX_HOME']
+    if !TorqueBox::DeployUtils.torquebox_home
+      raise Exception.new("Can't find a local TorqueBox instance. Try setting TORQUEBOX_HOME.")
+    end
   end
 
   def root_dir
-    _root_dir_ = File.expand_path( File.join( File.dirname( __FILE__ ), '..' ) )
-    if _root_dir_ =~/\.rvm/
-      $stderr.puts "It looks like you're using RVM for your JRuby."
-      $stderr.puts "TorqueBox has some trouble with load paths with an '@'."
-    end
-    _root_dir_
+    File.expand_path( File.join( File.dirname( __FILE__ ), '..' ) )
   end
 end
 
