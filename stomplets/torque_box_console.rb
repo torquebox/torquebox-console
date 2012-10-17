@@ -24,6 +24,8 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
 
   def on_message( message, session )
     server = @servers[session["console_id"]]
+    # Here we can intercept server commands which may
+    # allow us to switch runtimes 
     if server
       send_to( server.input_queue, message.content_as_string )
     else
