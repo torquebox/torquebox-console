@@ -13,32 +13,26 @@
 # limitations under the License.
 
 require 'pry'
-require 'torquebox-stomp'
-require 'torquebox-cache'
-require 'torquebox-messaging'
 
 module TorqueBox
   module Console
     class Server
 
-      attr_accessor :input_queue, :output_queue, :console_id
+      attr_accessor :input_queue, :output_queue, :console_id, :application, :runtime
 
-      def initialize
-        @cache = TorqueBox::Infinispan::Cache.new(:name=>"torquebox-console")
-        @console_id = @cache.increment( "console" )
-
-        input_name = "/queues/torquebox-console/#{console_id}-input"
-        output_name = "/queues/torquebox-console/#{console_id}-output"
-
-        @input_queue = TorqueBox::Messaging::Queue.start( input_name, :durable => false )
-        @output_queue = TorqueBox::Messaging::Queue.start( output_name, :durable => false )
+      def initialize(console_id, input_queue, output_queue, application, runtime)
+        @console_id = console_id
+        @input_queue = input_queue
+        @output_queue = output_queue
+        @application = application
+        @runtime = runtime
       end
 
       def run( entry_point )
-        Thread.new do 
+        Thread.new do
           Pry.config.pager  = false
           #Pry.config.color  = false
-          Pry.config.prompt = proc { "TorqueBox> " }
+          Pry.config.prompt = proc { "TorqueBox (#{application}, #{runtime})> " }
           Pry.start entry_point, :input => self, :output => self
         end
       end
@@ -54,6 +48,11 @@ module TorqueBox
       # Pry output channel
       def puts( output = "" )
         output_queue.publish output.to_s
+      end
+
+      def evaluate( code )
+        binding = TorqueBox::Console::Builtin.create_block.binding
+        eval( code, binding )
       end
 
       # Pry (undocumented?) requires this

@@ -12,52 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'torquebox'
-
 module TorqueBox
   module Console
     module Builtin
       extend TorqueBox::Injectors
       class << self
-      def service_registry
-        @@service_registry ||= inject("service-registry")
+
+      # Simple placeholder methods - the stomplet is responsible
+      # for actually switching runtimes
+      def switch_application(app)
+        switch_runtime(app, 'web')
+      end
+      def switch_runtime(app, runtime)
+        [app, runtime]
       end
 
-      def lookup_runtime(app, name)
-        service_registry = inject('service-registry')
-        service_name = nil
-        
-        if app
-          _, _, service_name = list_runtimes.detect { |v| v[0] == app && v[1] == name }
-        else
-          unit = inject('deployment-unit')
-          service_name = org.torquebox.core.as.CoreServices.runtimePoolName(unit, name)
-        end
-
-        return nil unless service_name
-        service_controller = service_registry.get_service(service_name)
-        return nil unless service_controller
-        pool = service_controller.service.value
-        
-        pool.evaluate """
-        require 'torquebox-console'
-      """
-        [pool] + parse_pool_name(service_name)
+      def list_applications
+        list_runtimes.map { |runtimes| runtimes.first }.uniq
       end
 
-      def web_runtime(app)
-        lookup_runtime(app, 'web')
+      def list_runtimes
+        service_registry = inject("service-registry")
+        service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.
+          reject(&:nil?).map { |app, runtime, svc_name| [app, runtime] }
       end
-
-      def get_runtimes
-        service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.reject(&:nil?)
-      end
-
-      alias_method :list_runtimes, :get_runtimes
 
       def parse_pool_name(service_name)
         [$1, $3, service_name] if service_name.canonical_name =~
           /"(.*)(-knob\.yml|\.knob)"\.torquebox\.core\.runtime\.pool\.([^.]+)$/
+      end
+
+      def create_block
+        Proc.new {}
       end
       end
     end

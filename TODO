@@ -1,5 +1,4 @@
 * Destroy queues on disconnect
-* Figure out how to attach to other runtimes
 * multi-line input 
 * Add auth if necessasry
 * Implement additional helper methods in Builtin, e.g. clear_cache
@@ -10,3 +9,4 @@
 * [done] Make web UI auto scroll
 * [done] Ensure the client unsubscribes
 * [done] escape angle brackets in the html
+* [done] Figure out how to attach to other runtimes
