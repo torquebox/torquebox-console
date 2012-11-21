@@ -80,6 +80,8 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
     if existing_server
       # shuffle the desired runtime to the current one
       @servers[console_id] << @servers[console_id].delete( existing_server )
+      input_queue = TorqueBox::Messaging::Queue.new( existing_server.input_queue.name )
+      send_to( input_queue, "" )
     else
       pool = lookup_runtime( app, runtime )
       dependencies = Gem::Specification.find_by_name('pry').runtime_dependencies.map(&:name)
