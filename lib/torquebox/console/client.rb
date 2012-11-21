@@ -27,7 +27,7 @@ module TorqueBox
       def initialize
         @client = Stomp::Client.new( PARAMS )
       rescue Stomp::Error::MaxReconnectAttempts
-        puts "Can't connect to TorqueBox. Are you sure the server is running?"
+        puts "Cannot connect to TorqueBox. Are you sure the server is running?"
       end
 
       def self.connect
@@ -36,15 +36,27 @@ module TorqueBox
 
       def run
         if client
-          client.subscribe("/stomplet/console") do |msg| 
-            !msg.headers['prompt'] && puts(msg.body)
+          prompt = "TorqueBox> "
+          received_prompt = false
+          client.subscribe("/stomplet/console") do |msg|
+            if msg.headers['prompt']
+              prompt = msg.body
+              received_prompt = true
+            else
+              puts msg.body
+            end
           end
           # Since our messaging is async, sleep
           # before displaying the prompt
-          sleep 0.3
-          while(input = Readline.readline( "TorqueBox> ", true ))
+          while !received_prompt
+            sleep 0.05
+          end
+          while(input = Readline.readline( prompt, true ))
+            received_prompt = false
             client.publish("/stomplet/console", input)
-            sleep 0.3 # again with the async
+            while !received_prompt
+              sleep 0.05 # again with the async
+            end
           end
           client.unsubscribe('/stomplet/console')
         end
