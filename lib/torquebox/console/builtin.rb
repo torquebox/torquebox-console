@@ -34,7 +34,7 @@ module TorqueBox
       def list_runtimes
         service_registry = inject("service-registry")
         service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.
-          reject(&:nil?).map { |app, runtime, svc_name| [app, runtime] }
+          reject(&:nil?).map { |app, runtime, svc_name| [app, runtime] }.sort
       end
 
       def parse_pool_name(service_name)
