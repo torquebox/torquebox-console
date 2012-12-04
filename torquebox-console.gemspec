@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
           ["torquebox", "~>2.0"],
           ["sinatra", "~>1.3.3"],
           ["haml", "~>3.1.7"],
-          ["thor", "~>0.14.6"],
+          ["thor", ">=0.14.6"],
           ["stomp", "~>1.2.6"]
         ]
   
