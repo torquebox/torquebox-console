@@ -18,21 +18,22 @@ require 'readline'
 module TorqueBox
   module Console
     class Client
-      HEADERS = { "accept-version" => "1.1", "host" => "localhost" }
-      HOSTS   = [{:host => "localhost", :port => 8675}]
-      PARAMS  = { :connect_headers => HEADERS, :hosts => HOSTS, :max_reconnect_attempts => -1 }
+      DEFAULT_HEADERS = { "accept-version" => "1.1" }
+      DEFAULT_HOST = { :host => "localhost", :port => 8675 }
+      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1 }
 
       attr_accessor :client, :closed
 
-      def initialize
+      def initialize (host = DEFAULT_HOST)
+        build_globals(host)
         @closed = false
-        @client = Stomp::Client.new( PARAMS )
+        @client = Stomp::Client.new(@params)
       rescue Stomp::Error::MaxReconnectAttempts
         puts "Cannot connect to TorqueBox. Are you sure the server is running?"
       end
 
-      def self.connect
-        Client.new.run
+      def self.connect (host = DEFAULT_HOST)
+        Client.new(host).run
       end
 
       def run
@@ -57,7 +58,7 @@ module TorqueBox
           while !received_prompt && !closed
             sleep 0.05
           end
-          while !closed && (input = Readline.readline( prompt, true ))
+          while !closed && (input = Readline.readline(prompt, true))
             received_prompt = false
             client.publish("/stomplet/console", input) unless closed
             while !received_prompt && !closed
@@ -68,6 +69,14 @@ module TorqueBox
           # Hide any errors printed after we've unsubscribed
           $stderr.close
         end
+      end
+      
+      protected
+      
+      def build_globals (host)
+        @hosts = [host]
+        @headers = DEFAULT_HEADERS.merge({ :host => host[:host] })
+        @params = DEFAULT_PARAMS.merge({ :hosts => @hosts, :connect_headers => @headers })
       end
     end
   end
