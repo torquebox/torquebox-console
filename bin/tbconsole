@@ -54,8 +54,10 @@ EOT
   end
 
   desc "connect", "Runs the CLI console"
+  method_option :hostname, :type => :string, :default => "localhost"
+  method_option :port, :type => :numeric, :default => 8675
   def connect
-    TorqueBox::Console::Client.connect
+    TorqueBox::Console::Client.connect({ :host => options[:hostname], :port => options[:port] })
   end
 
   protected
