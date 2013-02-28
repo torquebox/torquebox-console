@@ -1,1 +1,3 @@
 torquebox-console-*.gem
+vendor
+.bundle

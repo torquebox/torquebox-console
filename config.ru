@@ -1,3 +1,4 @@
+require './dependencies.rb'
 require './console'
 require 'torquebox-stomp'
 
