@@ -44,26 +44,28 @@ class TorqueBoxConsoleCommand < Thor
   method_option :port, :type => :numeric, :default => 8675
   def connect
     check
-    deploy_app
-    print "Giving TorqueBox a few seconds to initialize the console. Please be patient."
-    counter = 5
-    while counter > 0
-      sleep 2
-      print "."
-      counter = counter - 1
-    end
-    puts ""
+    deploy_app(true)
     TorqueBox::Console::Client.connect({ :host => options[:hostname], :port => options[:port] })
   end
 
   protected
-  def deploy_app
+  def deploy_app( wait = false )
     if (!TorqueBox::DeployUtils.is_deployed?(TorqueBox::DeployUtils.deployment_name('torquebox-console')))
       puts "Deploying torquebox-console to #{TorqueBox::DeployUtils.torquebox_home}"
       descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => root_dir,
                                                                        :env => 'production' )
       name, dir = TorqueBox::DeployUtils.deploy_yaml( descriptor, :name => DEPLOYMENT_NAME )
       puts "Deployed torquebox-console to #{dir}/#{name}"
+      if (wait)
+        print "Giving TorqueBox a few seconds to initialize the console. Please be patient."
+        counter = 5
+        while counter > 0
+          sleep 2
+          print "."
+          counter = counter - 1
+        end
+        puts ""
+      end
     else
       puts "torquebox-console is already deployed"
     end

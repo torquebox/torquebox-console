@@ -20,7 +20,7 @@ module TorqueBox
     class Client
       DEFAULT_HEADERS = { "accept-version" => "1.1" }
       DEFAULT_HOST = { :host => "localhost", :port => 8675 }
-      DEFAULT_PARAMS  = { :max_reconnect_attempts => 10 }
+      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1 }
 
       attr_accessor :client, :closed
 
@@ -58,14 +58,14 @@ module TorqueBox
           while !received_prompt && !closed
             sleep 0.05
           end
-          while !closed && (input = Readline.readline(prompt, true))
+          while !closed && client.open? && (input = Readline.readline(prompt, true))
             received_prompt = false
             client.publish("/stomplet/console", input) unless closed
             while !received_prompt && !closed
               sleep 0.05 # again with the async
             end
           end
-          client.unsubscribe('/stomplet/console')
+          client.unsubscribe('/stomplet/console') if client.open?
           # Hide any errors printed after we've unsubscribed
           $stderr.close
         end
