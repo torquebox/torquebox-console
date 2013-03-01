@@ -16,6 +16,8 @@
 
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
+require File.join(File.dirname(__FILE__), '..', 'dependencies')
+
 require 'thor'
 require 'fileutils'
 require 'torquebox-rake-support'
@@ -25,58 +27,48 @@ class TorqueBoxConsoleCommand < Thor
 
   DEPLOYMENT_NAME = 'torquebox-console-knob.yml'
 
-  desc "deploy --dir=DIR", <<-EOT
-Writes the torquebox-console application to disk in the directory specified by 
---dir, and deploys the app to the TorqueBox instance detected on the local host,
-(currently #{TorqueBox::DeployUtils.torquebox_home}).
-
-If --dir is not provided, the torquebox-console app will be written to Dir.pwd/torquebox-console
-(currently #{Dir.pwd}/torquebox-console). 
-EOT
-  method_option :dir, :type => :string, :default => "#{Dir.pwd}/torquebox-console"
+  desc "deploy", "Deploys the torquebox-console application to #{TorqueBox::DeployUtils.torquebox_home}."
   def deploy
     check
-    deploy_dir = File.expand_path options[:dir]
-    descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => deploy_dir,
-                                                                     :env => 'production' )
-    Dir.mkdir( deploy_dir ) unless File.exist?( deploy_dir )
-    puts "Copying torquebox-console app to #{deploy_dir}"
-    files = Dir.glob("#{root_dir}/*") - ["#{root_dir}/bin"]
-    FileUtils.cp_r( files, "#{deploy_dir}/" )
-    name, dir = TorqueBox::DeployUtils.deploy_yaml( descriptor, :name => DEPLOYMENT_NAME )
-    puts ">> Deployed to #{dir}/#{name}"
+    deploy_app
   end
 
-  desc "undeploy", "Undeploys TorqueBox::Console from the TorqueBox instance specified by $TORQUEBOX_HOME"
+  desc "undeploy", "Undeploys torquebox-console from #{TorqueBox::DeployUtils.torquebox_home}."
   def undeploy
     check
     name, dir = TorqueBox::DeployUtils.undeploy_yaml( :name => DEPLOYMENT_NAME )
   end
 
-  desc "connect", "Runs the torquebox-console CLI. If torquebox-console is not deployed to TorqueBox, it will be."
+  desc "connect", "Runs the torquebox-console CLI. If torquebox-console is not already deployed, it will be."
   method_option :hostname, :type => :string, :default => "localhost"
   method_option :port, :type => :numeric, :default => 8675
   def connect
     check
+    deploy_app
+    print "Giving TorqueBox a few seconds to initialize the console. Please be patient."
+    counter = 5
+    while counter > 0
+      sleep 2
+      print "."
+      counter = counter - 1
+    end
+    puts ""
+    TorqueBox::Console::Client.connect({ :host => options[:hostname], :port => options[:port] })
+  end
+
+  protected
+  def deploy_app
     if (!TorqueBox::DeployUtils.is_deployed?(TorqueBox::DeployUtils.deployment_name('torquebox-console')))
       puts "Deploying torquebox-console to #{TorqueBox::DeployUtils.torquebox_home}"
       descriptor = TorqueBox::DeployUtils.basic_deployment_descriptor( :root => root_dir,
                                                                        :env => 'production' )
       name, dir = TorqueBox::DeployUtils.deploy_yaml( descriptor, :name => DEPLOYMENT_NAME )
       puts "Deployed torquebox-console to #{dir}/#{name}"
-      print "Giving TorqueBox a few seconds to initialize the console. Please be patient."
-      counter = 5
-      while counter > 0
-        sleep 2
-        print "."
-        counter = counter - 1
-      end
-      puts ""
+    else
+      puts "torquebox-console is already deployed"
     end
-    TorqueBox::Console::Client.connect({ :host => options[:hostname], :port => options[:port] })
   end
 
-  protected
   def check
     if !TorqueBox::DeployUtils.torquebox_home
       raise Exception.new("Can't find a local TorqueBox instance. Try setting TORQUEBOX_HOME.")

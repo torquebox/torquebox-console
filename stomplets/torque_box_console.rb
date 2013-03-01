@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require File.join(File.dirname(__FILE__), '..', 'dependencies')
 require 'torquebox-cache'
 require 'torquebox-messaging'
 require 'torquebox-stomp'
@@ -83,16 +84,9 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
       input_queue = TorqueBox::Messaging::Queue.new( existing_server.input_queue.name )
       send_to( input_queue, "" )
     else
+      deps = File.join(File.dirname(__FILE__), '..', 'dependencies') 
       pool = lookup_runtime( app, runtime )
-      dependencies = Gem::Specification.find_by_name('pry').runtime_dependencies.map(&:name)
-      dependencies << 'pry'
-      load_paths = $:.select do |path|
-        dependencies.any? { |dep| path.include?(dep) }
-      end
-      load_paths << File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-      load_paths.each do |path|
-        pool.evaluate(%Q{$: << '#{path}' unless $:.include?('#{path}')})
-      end
+      pool.evaluate("require '#{deps}'")
       pool.evaluate("require 'torquebox/console/server'")
       pool.evaluate("require 'torquebox/console/builtin'")
 
