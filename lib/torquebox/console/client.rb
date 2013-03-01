@@ -20,7 +20,7 @@ module TorqueBox
     class Client
       DEFAULT_HEADERS = { "accept-version" => "1.1" }
       DEFAULT_HOST = { :host => "localhost", :port => 8675 }
-      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1 }
+      DEFAULT_PARAMS  = { :max_reconnect_attempts => 10 }
 
       attr_accessor :client, :closed
 
