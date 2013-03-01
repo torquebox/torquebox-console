@@ -38,7 +38,7 @@ task :resolve_deps => [ :bundle ] do
   File.open("dependencies.rb", File::CREAT|File::TRUNC|File::RDWR, 0644) do |f|
     lib_dirs.each do |dir|
         p "Adding dependency on #{dir}"
-        f.write("$:.unshift '#{dir}'\n")
+        f.write("$:.unshift File.join(File.dirname(__FILE__), '#{dir}')\n")
     end
   end
 end

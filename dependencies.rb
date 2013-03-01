@@ -1,14 +1,15 @@
-$:.unshift './vendor/bundle/jruby/1.9/gems/coderay-1.0.9/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/haml-3.1.8/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/haml-3.1.8/vendor/sass/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/haml-3.1.8/vendor/sass/vendor/fssm/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/method_source-0.8.1/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/pry-0.9.12-java/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/rack-1.5.2/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/rack-protection-1.3.2/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/sinatra-1.3.5/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/slop-3.4.3/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/spoon-0.0.1/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/stomp-1.2.8/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/thor-0.17.0/lib'
-$:.unshift './vendor/bundle/jruby/1.9/gems/tilt-1.3.4/lib'
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/coderay-1.0.9/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/haml-3.1.8/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/haml-3.1.8/vendor/sass/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/haml-3.1.8/vendor/sass/vendor/fssm/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/method_source-0.8.1/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/pry-0.9.12-java/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/rack-1.5.2/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/rack-protection-1.4.0/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/rake-10.0.3/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/sinatra-1.3.5/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/slop-3.4.3/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/spoon-0.0.1/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/stomp-1.2.8/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/thor-0.17.0/lib')
+$:.unshift File.join(File.dirname(__FILE__), './vendor/bundle/jruby/1.9/gems/tilt-1.3.4/lib')

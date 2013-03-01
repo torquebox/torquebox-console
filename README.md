@@ -5,17 +5,20 @@ the TorqueBox server, giving you a Pry interface to work with.
 
 ## Installation
 
-    gem install torquebox-console
+    $ gem install torquebox-console
 
 ## Usage
 
-First deploy to a TorqueBox server.
+Make sure you have a running TorqueBox server where you installed
+torquebox-console, then issue the following command.
 
-    tbconsole deploy --dir=/some/path
+  $ tbconsole connect
 
-Then you can connect with a web browser at
-`http://<servername>:<portnumber>/console`, or on the command line with
-`tbconsole connect`.
+This will deploy torquebox-console as an application into the running TorqueBox
+server, if it hasn't already been installed, and present you with an enhanced
+pry console into your TorqueBox server. Once you have connected on the command
+line, and you know the torquebox-console server is working, then you can
+connect with a web browser at `http://<servername>:<portnumber>/console`.
 
 To list and connect to other running applications, use the commands:
 

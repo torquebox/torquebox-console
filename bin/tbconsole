@@ -71,6 +71,7 @@ EOT
         print "."
         counter = counter - 1
       end
+      puts ""
     end
     TorqueBox::Console::Client.connect({ :host => options[:hostname], :port => options[:port] })
   end
@@ -80,6 +81,7 @@ EOT
     if !TorqueBox::DeployUtils.torquebox_home
       raise Exception.new("Can't find a local TorqueBox instance. Try setting TORQUEBOX_HOME.")
     end
+    ENV['JBOSS_HOME'] = File.join(TorqueBox::DeployUtils.torquebox_home, 'jboss') unless ENV['JBOSS_HOME']
   end
 
   def root_dir
