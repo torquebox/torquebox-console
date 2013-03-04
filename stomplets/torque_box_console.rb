@@ -69,6 +69,13 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
     @servers.delete( session["console_id"] )
   end
 
+  def destroy
+    @servers.each_key do |k|
+      logger.info "Closing TorqueBox console #{k}"
+      @servers.delete(k)
+    end
+  end
+
   def output_name(console_id)
     "/queues/torquebox-console/#{console_id}-output"
   end

@@ -20,13 +20,12 @@ module TorqueBox
     class Client
       DEFAULT_HEADERS = { "accept-version" => "1.1" }
       DEFAULT_HOST = { :host => "localhost", :port => 8675 }
-      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1 }
+      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1, :reliable => true }
 
-      attr_accessor :client, :closed
+      attr_accessor :client
 
       def initialize (host = DEFAULT_HOST)
         build_globals(host)
-        @closed = false
         @client = Stomp::Client.new(@params)
       rescue Stomp::Error::MaxReconnectAttempts
         puts "Cannot connect to TorqueBox. Are you sure the server is running?"
@@ -39,7 +38,7 @@ module TorqueBox
       def run
         if client
           trap("INT") {
-            @closed = true
+            client.close if client.open?
             puts ""
             puts "Disconnecting console, press enter to exit"
           }
@@ -55,13 +54,13 @@ module TorqueBox
           end
           # Since our messaging is async, sleep
           # before displaying the prompt
-          while !received_prompt && !closed
+          while !received_prompt && client.open?
             sleep 0.05
           end
-          while !closed && client.open? && (input = Readline.readline(prompt, true))
+          while client.open? && (input = Readline.readline(prompt, true))
             received_prompt = false
-            client.publish("/stomplet/console", input) unless closed
-            while !received_prompt && !closed
+            client.publish("/stomplet/console", input) if client.open?
+            while !received_prompt && client.open?
               sleep 0.05 # again with the async
             end
           end
