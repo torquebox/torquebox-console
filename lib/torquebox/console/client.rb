@@ -20,7 +20,7 @@ module TorqueBox
     class Client
       DEFAULT_HEADERS = { "accept-version" => "1.1" }
       DEFAULT_HOST = { :host => "localhost", :port => 8675 }
-      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1, :reliable => true }
+      DEFAULT_PARAMS  = { :max_reconnect_attempts => -1, :reliable => false }
 
       attr_accessor :client
 
@@ -39,7 +39,6 @@ module TorqueBox
         if client
           trap("INT") {
             client.close if client.open?
-            puts ""
             puts "Disconnecting console, press enter to exit"
           }
           prompt = "TorqueBox> "
@@ -64,7 +63,10 @@ module TorqueBox
               sleep 0.05 # again with the async
             end
           end
-          client.unsubscribe('/stomplet/console') if client.open?
+          if client.open?
+            client.unsubscribe('/stomplet/console') 
+          end
+          $stderr.puts "Connection closed."
           # Hide any errors printed after we've unsubscribed
           $stderr.close
         end

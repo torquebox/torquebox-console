@@ -26,6 +26,7 @@ require 'torquebox/console/client'
 class TorqueBoxConsoleCommand < Thor
 
   DEPLOYMENT_NAME = 'torquebox-console-knob.yml'
+  default_task :connect
 
   desc "deploy", "Deploys the torquebox-console application to #{TorqueBox::DeployUtils.torquebox_home}."
   def deploy
@@ -66,8 +67,6 @@ class TorqueBoxConsoleCommand < Thor
         end
         puts ""
       end
-    else
-      puts "torquebox-console is already deployed"
     end
   end
 
