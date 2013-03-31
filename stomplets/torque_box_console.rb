@@ -19,6 +19,7 @@ require 'torquebox-stomp'
 require 'torquebox-console'
 
 class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
+  include TorqueBox::Injectors
 
   def configure( options )
     super
@@ -119,13 +120,13 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
   end
 
   def lookup_runtime(app, name)
-    service_registry = inject('service-registry')
+    service_registry = fetch('service-registry')
     service_name = nil
 
     if app
       _, _, service_name = list_runtimes.detect { |v| v[0] == app && v[1] == name }
     else
-      unit = inject('deployment-unit')
+      unit = fetch('deployment-unit')
       service_name = org.torquebox.core.as.CoreServices.runtimePoolName(unit, name)
     end
 
@@ -137,7 +138,7 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
   end
 
   def list_runtimes
-    service_registry = inject("service-registry")
+    service_registry = fetch("service-registry")
     service_registry.service_names.to_a.map { |x| parse_pool_name(x) }.reject(&:nil?)
   end
 
