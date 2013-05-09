@@ -35,7 +35,7 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
     if servers
       server = servers.last
       # Intercept the switch runtime commands
-      if input =~ /^\s*(switch_application|switch_runtime)\s*\(.+\)$/
+      if input =~ /^\s*(switch_application|switch_runtime).+$/
         app, runtime = server.evaluate( input )
         switch_runtime( app, runtime, console_id )
         output_queue = TorqueBox::Messaging::Queue.new( output_name( console_id ) )
