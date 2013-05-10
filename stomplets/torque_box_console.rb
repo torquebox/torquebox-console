@@ -34,14 +34,25 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
     servers = @servers[console_id]
     if servers
       server = servers.last
+      input_queue = TorqueBox::Messaging::Queue.new( server.input_queue.name )
+      output_queue = TorqueBox::Messaging::Queue.new( output_name( console_id ) )
       # Intercept the switch runtime commands
       if input =~ /^\s*(switch_application|switch_runtime).+$/
-        app, runtime = server.evaluate( input )
-        switch_runtime( app, runtime, console_id )
-        output_queue = TorqueBox::Messaging::Queue.new( output_name( console_id ) )
-        send_to( output_queue, "Switched to #{runtime} runtime of #{app} application" )
+        begin
+          app, runtime = server.evaluate( input )
+        rescue Exception => e
+          send_to( output_queue, e.message )
+          send_to( input_queue, "" )
+          return
+        end
+        success = switch_runtime( app, runtime, console_id )
+        if success
+          send_to( output_queue, "Switched to #{runtime} runtime of #{app} application" )
+        else
+          send_to( output_queue, "Invalid application or runtime requested" )
+          send_to( input_queue, "" )
+        end
       else
-        input_queue = TorqueBox::Messaging::Queue.new( server.input_queue.name )
         send_to( input_queue, input )
       end
     else
@@ -94,6 +105,7 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
     else
       deps = File.join(File.dirname(__FILE__), '..', 'dependencies') 
       pool = lookup_runtime( app, runtime )
+      return false if pool.nil?
       pool.evaluate("require '#{deps}'")
       pool.evaluate("require 'torquebox/console/server'")
       pool.evaluate("require 'torquebox/console/builtin'")
@@ -113,6 +125,7 @@ class TorqueBoxConsole < TorqueBox::Stomp::JmsStomplet
       @servers[console_id] ||= []
       @servers[console_id] << server
     end
+    true
   end
 
   def web_runtime(app)
