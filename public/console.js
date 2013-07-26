@@ -1,14 +1,19 @@
 $().ready( function() {
-  if (endpoint == null) {
-    // endpoint should be set in index.haml
-    // value provided by torquebox injection
-    // but if for whatever reason that doesn't
-    // work, we'll try this
-    endpoint = "ws://localhost:8675" 
-  } else { 
-    alert( "Using: " + endpoint )
+  var client;
+  if (torquebox3) {
+    client = new Stomp.Client();
+  } else {
+    if (endpoint == null) {
+      // endpoint should be set in index.haml
+      // value provided by torquebox injection
+      // but if for whatever reason that doesn't
+      // work, we'll try this
+      endpoint = "ws://localhost:8675" 
+    } else { 
+      alert( "Using: " + endpoint )
+    }
+    client = Stomp.client( endpoint )
   }
-  client = Stomp.client( endpoint )
 
   var display_message = function( message ) {
       elem = $("#console .content")
@@ -49,8 +54,13 @@ $().ready( function() {
   $( '#input-form' ).bind( "submit", send_message );
   $( '.button' ).bind( "click", toggle_theme );
 
-  client.connect( null, null, function() {
-      client.subscribe("/stomplet/console", display_message)
-  } );
+  var connect_function = function() {
+    client.subscribe( "/stomplet/console", display_message )
+  };
+  if (torquebox3) {
+    client.connect( connect_function );
+  } else {
+    client.connect( null, null, connect_function );
+  }
 } )
 

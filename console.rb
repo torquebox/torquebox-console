@@ -15,10 +15,17 @@ helpers do
       if @endpoint =~ /default-host/
         @endpoint.gsub!(/default-host/, "localhost")
         @endpoint.gsub!(/\/console\/console/, "")
+      elsif torquebox_3?
+        @endpoint = "#{@endpoint.host}:#{@endpoint.port}"
+        @endpoint.gsub!(/default-host/, "localhost")
       end
       @endpoint
     end
     @endpoint
+  end
+
+  def torquebox_3?
+    TorqueBox.respond_to?(:fetch)
   end
 end
 
