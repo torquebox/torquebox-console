@@ -58,13 +58,17 @@ module TorqueBox
           end
           while client.open? && (input = Readline.readline(prompt, true))
             received_prompt = false
+            if input == 'exit' || input == 'quit'
+              client.unsubscribe('/stomplet/console')
+              client.close
+            end
             client.publish("/stomplet/console", input) if client.open?
             while !received_prompt && client.open?
               sleep 0.05 # again with the async
             end
           end
           if client.open?
-            client.unsubscribe('/stomplet/console') 
+            client.unsubscribe('/stomplet/console')
           end
           $stderr.puts "Connection closed."
           # Hide any errors printed after we've unsubscribed
